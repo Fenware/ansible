@@ -1,0 +1,9 @@
+anaconda-ks.cfg
+
+Passwords :
+
+	root :
+		root1234
+
+	admin :
+		admin1234
