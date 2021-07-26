@@ -1,0 +1,74 @@
+---
+
+- name: Instalar Docker
+  gather_facts: No
+  hosts: all
+
+  tasks:
+    - name: Apagar el mugroso firewalld
+      systemd:
+        name: firewalld
+        state: stopped
+        enabled: no
+
+    - name: Instalar yum utils
+      yum:
+        name: yum-utils
+        state: latest
+
+    - name: Descargando el repo de Docker
+      get_url:
+        url: https://download.docker.com/linux/centos/docker-ce.repo
+        dest: /etc/yum.repos.d/docer-ce.repo
+      become: yes
+
+    - name: Activando el repo de Docker edge
+      ini_file:
+        dest: /etc/yum.repos.d/docer-ce.repo
+        section: 'docker-ce-edge'
+        option: enabled
+        value: 0
+      become: yes
+
+    - name: Activando el repo de Docker test
+      ini_file:
+        dest: /etc/yum.repos.d/docer-ce.repo
+        section: 'docker-ce-test'
+        option: enabled
+        value: 0
+      become: yes
+
+    - name: Instalar Docker
+      package:
+        name: docker-ce
+        state: latest
+      become: yes
+
+    - name: Iniciar & Activar Docker
+      service:
+        name: docker
+        state: started
+        enabled: yes
+      become: yes
+
+    - name: Descargando el repo de Docker
+      get_url:
+        url: https://github.com/docker/compose/releases/download/1.29.2/docker-compose-Linux-x86_64
+        dest: /usr/local/bin/docker-compose
+        mode: 'a+x'
+        force: yes
+      become: yes
+
+    - name: Dar permisos docker-compose
+      shell: chmod +x /usr/local/bin/docker-compose
+    
+    - name: Create a symbolic link of docker-compose
+      ansible.builtin.file:
+        src: /usr/local/bin/docker-compose
+        dest: /usr/bin/docker-compose
+        owner: root
+        group: wheel
+        state: link
+
+    
+  
