@@ -1,0 +1,32 @@
+---
+
+- name: Desplegar proyecto a produccion
+  connection: ssh
+  hosts: all
+  gather_facts: No
+
+  vars_prompt:
+    - name: "githubtoken"
+      prompt: "Ingresa tu github token"
+      private: yes
+
+  tasks:
+    - git:
+        repo: https://{{ githubtoken }}:x-oauth-basic@github.com/Fenware/backend.git
+        dest: "/var/backend"
+        update: yes
+
+    - name: start docker service
+      service: name=docker state=started
+    
+    - name: Docker Compose - start backend & database
+      shell: cd /var/backend/ && docker-compose build && docker-compose up -d
+
+    - name: Docker - start admin-frontend
+      shell: docker run -d -p 8081:80 lucaspintos909/admin-frontend:latest
+
+    - name: Docker - start docente-frontend
+      shell: docker run -d -p 8082:80 lucaspintos909/docente-frontend:latest
+
+    - name: Docker - start alumno-frontend
+      shell: docker run -d -p 8083:80 lucaspintos909/alumno-frontend:latest
