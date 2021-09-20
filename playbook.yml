@@ -1,6 +1,6 @@
 ---
 
-- name: Instalar Docker
+- name: Configuración del servidor (instalando docker, configurando ssh)
   gather_facts: No
   hosts: all
 
@@ -53,3 +53,13 @@
         owner: root
         group: wheel
         state: link
+    
+    - name: Copiando archivos de configuracion de ssh
+      copy:
+        src: ./sshd_config
+        dest: /etc/ssh/sshd_config
+
+    - name: Reiniciando servicio de ssh para aplicar los cambios
+      shell: sleep 3; systemctl restart sshd
+      async: 1
+      poll: 0
