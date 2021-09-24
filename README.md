@@ -6,5 +6,5 @@
   - Inventario: `ansible/inventory.ini`
   
   ### Servidor
-  - Anaconda-ks: `anaconda-ks.cfg`
-  - Claves del sistema: `Información_guia.txt`
+  - Anaconda-ks: `servidor/anaconda-ks.cfg`
+  - Claves del sistema: `servidor/Información_guia.txt`
