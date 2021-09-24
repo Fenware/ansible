@@ -9,27 +9,32 @@
     - name: "githubtoken"
       prompt: "Ingresa tu github token"
       private: yes
-
+  
   tasks:
+    - name: Instalando git
+      yum:
+        name:
+          - git
+
     - git:
         repo: https://{{ githubtoken }}:x-oauth-basic@github.com/Fenware/backend.git
         dest: "/var/backend"
         update: yes
+    
+    - name: Creando carpeta frontend
+      shell: mkdir /var/frontend
+
+    - name: Descargando docker-compose.yml para levantar los frontends
+      get_url:
+        url: https://fenware.github.io/archivos/docker-compose.yml
+        dest: /var/frontend/
 
     - name: start docker service
       service: name=docker state=started
-    
-    - name: Deteniendo todos los contenedores activos y borrandolos
-      shell: docker stop $(docker ps -a -q) && docker rm $(docker ps -a -q)
 
     - name: Docker Compose - start backend & database
       shell: cd /var/backend/ && docker-compose build && docker-compose up -d
 
-    - name: Docker - start admin-frontend
-      shell: docker run -d -p 8081:80 lucaspintos909/admin-frontend:latest
+    - name: Docker Compose - start frontend
+      shell: cd /var/frontend/ && docker-compose up -d
 
-    - name: Docker - start docente-frontend
-      shell: docker run -d -p 8082:80 lucaspintos909/docente-frontend:latest
-
-    - name: Docker - start alumno-frontend
-      shell: docker run -d -p 8083:80 lucaspintos909/alumno-frontend:latest
