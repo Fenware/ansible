@@ -59,7 +59,23 @@
         src: ./sshd_config
         dest: /etc/ssh/sshd_config
 
-    - name: Reiniciando servicio de ssh para aplicar los cambios
+    - name: Reiniciando servicio de ssh para aplicar la configuracion
       shell: sleep 3; systemctl restart sshd
       async: 1
       poll: 0
+
+    - name: Creando usuario backup
+      user:
+        name: "backup"
+        group: "wheel"
+        password: "backup"
+
+    - name: Copiando script para hacer backups
+      copy:
+        src: ./script_backup.sh
+        dest: /home/backup/script_backup.sh
+
+    - name: Copiando archivo crontab
+      copy:
+        src: ./crontab
+        dest: /etc/crontab
