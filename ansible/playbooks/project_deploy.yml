@@ -4,7 +4,8 @@
   connection: ssh
   hosts: all
   gather_facts: No
-
+  vars:
+    ansible_ssh_private_key_file: "/home/lucas/.ssh/server_proyecto.pem"
   vars_prompt:
     - name: "githubtoken"
       prompt: "Ingresa tu github token"
@@ -15,26 +16,32 @@
       yum:
         name:
           - git
+      become: yes
 
     - git:
         repo: https://{{ githubtoken }}:x-oauth-basic@github.com/Fenware/backend.git
         dest: "/var/backend"
         update: yes
+      become: yes
     
     - name: Creando carpeta frontend
       shell: mkdir /var/frontend
+      become: yes
 
     - name: Descargando docker-compose.yml para levantar los frontends
       get_url:
         url: https://fenware.github.io/archivos/docker-compose.yml
         dest: /var/frontend/
+      become: yes
 
     - name: start docker service
       service: name=docker state=started
-
+      
     - name: Docker Compose - start backend & database
       shell: cd /var/backend/ && docker-compose build && docker-compose up -d
-
+      become: yes
+      
     - name: Docker Compose - start frontend
       shell: cd /var/frontend/ && docker-compose up -d
+      become: yes
 
