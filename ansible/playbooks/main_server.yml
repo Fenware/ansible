@@ -1,8 +1,8 @@
 ---
 
-- name: Configuración del servidor (instalando docker, configurando ssh)
-  gather_facts: No
-  hosts: all
+- name: Configuración del servidor principal
+  gather_facts: no
+  hosts: main_server
 
   tasks:
     - name: Apagando el firewalld
@@ -10,11 +10,15 @@
         name: firewalld
         state: stopped
         enabled: no
+      become: yes
 
     - name: Instalando yum utils
       yum:
         name: yum-utils
         state: latest
+      become: yes
+
+    - import_tasks: ssh_config_tasks.yml
 
     - name: Descargando el repo de Docker
       get_url:
@@ -53,29 +57,4 @@
         owner: root
         group: wheel
         state: link
-    
-    - name: Copiando archivos de configuracion de ssh
-      copy:
-        src: ./sshd_config
-        dest: /etc/ssh/sshd_config
-
-    - name: Reiniciando servicio de ssh para aplicar la configuracion
-      shell: sleep 3; systemctl restart sshd
-      async: 1
-      poll: 0
-
-    - name: Creando usuario backup
-      user:
-        name: "backup"
-        group: "wheel"
-        password: "backup"
-
-    - name: Copiando script para hacer backups
-      copy:
-        src: ./script_backup.sh
-        dest: /home/backup/script_backup.sh
-
-    - name: Copiando archivo crontab
-      copy:
-        src: ./crontab
-        dest: /etc/crontab
+      become: yes
