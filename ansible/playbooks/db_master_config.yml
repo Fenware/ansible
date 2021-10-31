@@ -1,0 +1,19 @@
+---
+
+- name: Configuración del servidor de base de datos
+  gather_facts: no
+  hosts: database_server
+  vars:
+    root_db_password: mnoseadmin1234
+
+  tasks:
+    - name: Apagando el firewall
+      systemd:
+        name: firewalld
+        state: stopped
+        enabled: no
+      become: yes
+
+    - import_tasks: ./tasks/ssh_config_tasks.yml
+
+    - import_tasks: ./tasks/mysql_install_tasks.yml
