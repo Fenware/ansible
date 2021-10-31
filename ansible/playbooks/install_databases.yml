@@ -1,0 +1,45 @@
+---
+
+- name: Configuración de los servidores de base de datos
+  gather_facts: no
+  hosts: database_servers
+  vars:
+    root_db_password: mnoseadmin1234
+
+  tasks:
+    - name: Apagando el firewall
+      systemd:
+        name: firewalld
+        state: stopped
+        enabled: no
+      become: yes
+
+    #- import_tasks: ./tasks/ssh_config_tasks.yml
+
+    - name: Descargando repo MySQL Community
+      get_url:
+        url: http://repo.mysql.com/mysql-community-release-el5-7.noarch.rpm
+        dest: /tmp
+
+    - name: Instalando repo MySQL Community
+      yum:
+        name: /tmp/mysql-community-release-el5-7.noarch.rpm
+        state: present
+
+    - name: Instalando MySQL Server
+      yum: name=mysql-server state=present
+
+    - name: Instalando MySQL-python, requierido para eliminar usuarios anonimos
+      yum: name=MySQL-python state=present
+
+    - name: Iniciando MySQL Server
+      service: name=mysqld state=started enabled=yes
+
+    - name: Elminando base de datos Test si existe
+      mysql_db: name=test state=absent
+
+    - name: Eliminando los usuarios anonimos
+      mysql_user: name="" host_all=yes state=absent
+
+    - name: Cambiando la contraseña del root
+      mysql_user: name=root host=localhost password={{root_db_password}}
