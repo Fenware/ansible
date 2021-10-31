@@ -2,7 +2,7 @@
 
 - name: Configuración del servidor de base de datos
   gather_facts: no
-  hosts: database_server
+  hosts: database_master
   vars:
     root_db_password: mnoseadmin1234
 
@@ -14,6 +14,18 @@
         enabled: no
       become: yes
 
-    - import_tasks: ./tasks/ssh_config_tasks.yml
+    - name: Copiando dump
+      copy:
+        src: ../config_files/database.sql
+        dest: /tmp/database.sql
+      become: yes
 
-    - import_tasks: ./tasks/mysql_install_tasks.yml
+    - name: importando el database
+      mysql_db:
+        name: database
+        state: import
+        target: /tmp/database.sql
+        login_host: 127.0.0.1
+        login_user: root
+        login_password: "{{root_db_password}}"
+        #delegate_to: neo_development 
