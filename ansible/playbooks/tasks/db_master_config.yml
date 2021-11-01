@@ -1,0 +1,53 @@
+---
+
+  - name: Copiando dump
+    copy:
+      src: ../config_files/mysql/database.sql
+      dest: /tmp/database.sql
+    become: yes
+
+  - name: Copiando archivo de configuracion de mysql
+    copy:
+      src: ../config_files/mysql/master_my.cnf
+      dest: /etc/my.cnf
+    become: yes
+  
+  - name: Reiniciando servicio mysqld
+    service: name=mysqld state=restarted
+    become: yes
+
+  - name: Creando usuario slave con la ip del servidor y permisos de replicacion
+    mysql_user:
+      #login_user: root
+      login_user: "{{master_db_name}}"
+      login_password: "{{master_db_pass}}"
+      #login_password: mnoseadmin1234
+      name: "{{slave_db_name}}"
+      password: "{{slave_db_pass}}"
+      host: "{{slave_db_ip}}"
+      priv: "*.*:REPLICATION SLAVE"
+      state: present
+
+  - name: Obteniendo nombre de archivo binario
+    shell: mysql -u "{{master_db_name}}" -p'{{master_db_pass}}' -e 'SHOW MASTER STATUS;' | grep mysql | awk '{print $1}'
+    register: command_output_bin_name
+  
+  - name: Obteniendo posicion de archivo binario
+    shell: mysql -u "{{master_db_name}}" -p'{{master_db_pass}}' -e 'SHOW MASTER STATUS;' | grep mysql | awk '{print $2}'
+    register: command_output_bin_position
+
+      #- name: Ejecutando script de configuracion para la replicacion de la database
+      #  script: ../config_files/mysql/replication_config.sh {{master_db_ip}} {{slave_db_ip}}
+
+
+
+
+      #- name: Importando el dump
+      #  mysql_db:
+      #    name: database
+      #    state: import
+      #    target: /tmp/database.sql
+      #    login_host: 127.0.0.1
+      #    login_user: root
+          #delegate_to: neo_development 
+      #    login_password: "{{master_db_pass}}"
