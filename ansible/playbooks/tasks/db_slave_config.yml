@@ -1,0 +1,35 @@
+---
+
+  - name: Copiando archivo de configuracion de mysql
+    copy:
+      src: ../config_files/mysql/slave_my.cnf
+      dest: /etc/my.cnf
+    become: yes
+
+  - name: Reiniciando servicio mysqld
+    service: name=mysqld state=restarted
+    become: yes
+  
+  - name: Detener la conexion del esclavo
+    mysql_replication:
+      mode: stopslave
+      login_user: "{{master_db_name}}"
+      login_password: "{{master_db_pass}}"
+
+  - name: Crear replica
+    mysql_replication:
+      mode: changemaster
+      login_user: "{{master_db_name}}"
+      login_password: "{{master_db_pass}}"
+
+      master_host: "{{master_db_ip}}"
+      master_user: "{{slave_db_name}}"
+      master_password: "{{slave_db_pass}}"
+      master_log_file: "{{bin_name}}"
+      master_log_pos: "{{bin_position}}"
+
+  - name: Iniciar la conexion del esclavo
+    mysql_replication:
+      mode: startslave
+      login_user: "{{master_db_name}}"
+      login_password: "{{master_db_pass}}"
