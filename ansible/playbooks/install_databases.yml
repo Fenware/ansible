@@ -14,7 +14,7 @@
         enabled: no
       become: yes
 
-    #- import_tasks: ./tasks/ssh_config_tasks.yml
+    #- import_tasks: ./tasks/ssh_config.yml
 
     - name: Descargando repo MySQL Community
       get_url:
