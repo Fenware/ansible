@@ -23,3 +23,12 @@
 
     - import_tasks: ./tasks/db_slave_config.yml
       delegate_to: database_slave
+
+    - name: Importando el dump (master)
+      mysql_db:
+        name: chathink
+        state: import
+        target: /tmp/database.sql
+        login_user: "{{master_db_name}}"
+        login_password: "{{master_db_pass}}"
+      delegate_to: database_master
