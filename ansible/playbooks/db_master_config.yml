@@ -5,27 +5,34 @@
   hosts: database_master
   vars:
     root_db_password: mnoseadmin1234
+    master_ip: "{{ hostvars['database_master'].ansible_host }}"
+    slave_ip: "{{ hostvars['database_slave'].ansible_host }}"
 
   tasks:
-    - name: Apagando el firewall
-      systemd:
-        name: firewalld
-        state: stopped
-        enabled: no
-      become: yes
-
     - name: Copiando dump
       copy:
-        src: ../config_files/database.sql
+        src: ../config_files/mysql/database.sql
         dest: /tmp/database.sql
       become: yes
 
-    - name: importando el database
-      mysql_db:
-        name: database
-        state: import
-        target: /tmp/database.sql
-        login_host: 127.0.0.1
-        login_user: root
-        login_password: "{{root_db_password}}"
+    - name: Copiando archivo de configuracion de mysql
+      copy:
+        src: ../config_files/mysql/master_my.cnf
+        dest: /etc/my.cnf
+      become: yes
+    
+    - name: Ejecutando script de configuracion para la replicacion de la database
+      script: ../config_files/mysql/replication_config.sh {{master_ip}} {{slave_ip}}
+
+
+
+
+    #- name: Importando el dump
+    #  mysql_db:
+    #    name: database
+    #    state: import
+    #    target: /tmp/database.sql
+    #    login_host: 127.0.0.1
+    #    login_user: root
+    #    login_password: "{{root_db_password}}"
         #delegate_to: neo_development 
