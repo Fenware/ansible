@@ -35,19 +35,3 @@
   - name: Obteniendo posicion de archivo binario
     shell: mysql -u "{{master_db_name}}" -p'{{master_db_pass}}' -e 'SHOW MASTER STATUS;' | grep mysql | awk '{print $2}'
     register: command_output_bin_position
-
-      #- name: Ejecutando script de configuracion para la replicacion de la database
-      #  script: ../config_files/mysql/replication_config.sh {{master_db_ip}} {{slave_db_ip}}
-
-
-
-
-      #- name: Importando el dump
-      #  mysql_db:
-      #    name: database
-      #    state: import
-      #    target: /tmp/database.sql
-      #    login_host: 127.0.0.1
-      #    login_user: root
-          #delegate_to: neo_development 
-      #    login_password: "{{master_db_pass}}"
