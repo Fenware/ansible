@@ -1,0 +1,25 @@
+---
+- name: Configuración de replicacion de servidores de base de datos
+  gather_facts: no
+  hosts: database_servers
+  vars:
+    master_db_ip: "{{ hostvars['database_master'].ansible_host }}"
+    slave_db_ip: "{{ hostvars['database_slave'].ansible_host }}"
+
+    master_db_name: root
+    master_db_pass: mnoseadmin1234
+    
+    slave_db_name: slave_db
+    slave_db_pass: mnoseadmin1234
+
+    command_output_bin_name: 'comando de salida del nombre del binario'
+    command_output_bin_position: 'comando de salida de la posicion del binario'
+    bin_name: "{{command_output_bin_name.stdout}}"
+    bin_position: "{{command_output_bin_position.stdout}}"
+
+  tasks:
+    - import_tasks: ./tasks/db_master_config.yml
+      delegate_to: database_master
+
+    - import_tasks: ./tasks/db_slave_config.yml
+      delegate_to: database_slave
