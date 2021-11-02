@@ -11,9 +11,9 @@ sql_mode=NO_ENGINE_SUBSTITUTION,STRICT_TRANS_TABLES
 
 #### Configuración agregada
 
-bind-address=172.16.213.128
 server-id = 1
-log-bin = /var/lib/mysql/mysql-bin
+bind-address=172.16.213.130
+log-bin = mysql-bin
 
 ####
 

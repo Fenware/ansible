@@ -8,10 +8,10 @@ symbolic-links=0
 # Recommended in standard MySQL setup
 sql_mode=NO_ENGINE_SUBSTITUTION,STRICT_TRANS_TABLES
 
-bind-address = 172.16.213.129
 server-id = 2
-log-bin = /var/lib/mysql/mysql-bin
-
+bind-address = 172.16.213.131
+log-bin = mysql-bin
+read_only = 1
 ####
 
 [mysqld_safe]
