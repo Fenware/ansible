@@ -2,33 +2,48 @@
 
 - name: Configuración del servidor de backups
   gather_facts: no
-  hosts: backup_server
+  hosts: backup
+  vars:
+    backup_user: backup
+    backup_pass: mnoseadmin1234
+    newuser: ''
+  become: yes
 
   tasks:
     - name: Apagando el firewall
       systemd:
         name: firewalld
         state: stopped
-        enabled: no
-      become: yes
+        enabled: nombre
 
-    - import_tasks: ./tasks/ssh_config.yml
+   #- import_tasks: ./tasks/ssh_config.yml
 
     - name: Creando usuario backup
       user:
-        name: "backup"
+        name: "{{backup_user}}"
         group: "wheel"
-        password: "backup"
-      become: yes
+        password: "{{backup_pass}}"
+        generate_ssh_key: yes
+        ssh_key_bits: 2048
+      register: newuser
+
+    - name: Nuevo usuario
+      debug:
+        var: newuser
+
+    - name: Copiando clave publica hacia el servidor de base de datos
+      authorized_key:
+        user: backup
+        state: present
+        key: "{{ newuser.ssh_public_key }}"
+      delegate_to: database_master
 
     - name: Copiando script para hacer backups
       copy:
-        src: ./script_backup.sh
-        dest: /home/backup/script_backup.sh
-      become: yes
+        src: ../config_files/script_backup.sh
+        dest: "/home/{{backup_user}}/script_backup.sh"
 
     - name: Copiando archivo crontab
       copy:
-        src: ./crontab
+        src: ../config_files/crontab
         dest: /etc/crontab
-      become: yes
