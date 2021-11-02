@@ -12,6 +12,9 @@
     slave_db_name: slave_db
     slave_db_pass: mnoseadmin1234
 
+    backup_user: backup
+    backup_pass: mnoseadmin1234
+
     command_output_bin_name: 'comando de salida del nombre del binario'
     command_output_bin_position: 'comando de salida de la posicion del binario'
     bin_name: "{{command_output_bin_name.stdout}}"
