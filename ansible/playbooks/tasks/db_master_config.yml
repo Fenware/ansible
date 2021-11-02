@@ -1,5 +1,13 @@
 ---
 
+  - name: Creando usuario para hacer los backups
+    user:
+      name: "{{backup_user}}"
+      group: "wheel"
+      password: "{{backup_pass}}"
+      generate_ssh_key: yes
+      ssh_key_bits: 2048
+      
   - name: Copiando dump
     copy:
       src: ../config_files/mysql/database.sql
