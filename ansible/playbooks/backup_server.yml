@@ -14,9 +14,9 @@
       systemd:
         name: firewalld
         state: stopped
-        enabled: nombre
+        enabled: yes
 
-   #- import_tasks: ./tasks/ssh_config.yml
+    #- import_tasks: ./tasks/ssh_config.yml
 
     - name: Creando usuario backup
       user:
@@ -27,10 +27,6 @@
         ssh_key_bits: 2048
       register: newuser
 
-    - name: Nuevo usuario
-      debug:
-        var: newuser
-
     - name: Copiando clave publica hacia el servidor de base de datos
       authorized_key:
         user: backup
@@ -38,12 +34,20 @@
         key: "{{ newuser.ssh_public_key }}"
       delegate_to: database_master
 
-    - name: Copiando script para hacer backups
+    - name: Copiando scripts para hacer backups
       copy:
         src: ../config_files/script_backup.sh
-        dest: "/home/{{backup_user}}/script_backup.sh"
+        dest: "/home/{{backup_user}}/{{item}}"
+      with_items:
+        - backups.sh
+        - backups_cleaner.sh
 
     - name: Copiando archivo crontab
       copy:
         src: ../config_files/crontab
         dest: /etc/crontab
+
+    - name: Creando carpeta para los backups
+      file:
+        path: "/home/{{backup_user}}/backups"
+        state: directory
