@@ -36,7 +36,7 @@
 
     - name: Copiando scripts para hacer backups
       copy:
-        src: ../config_files/script_backup.sh
+        src: "../config_files/backup_scripts/{{item}}"
         dest: "/home/{{backup_user}}/{{item}}"
       with_items:
         - backups.sh
@@ -46,6 +46,7 @@
       copy:
         src: ../config_files/crontab
         dest: /etc/crontab
+      become: yes
 
     - name: Creando carpeta para los backups
       file:
