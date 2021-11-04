@@ -1,0 +1,16 @@
+---
+
+- name: Playbook para ejecutar y configurar todo
+  gather_facts: no
+  hosts: database_servers
+
+  #tasks:  
+
+   # - name: Ejecutando playbook para configurar servidores de base de datos
+- import_playbook: ./playbooks/install_databases.yml
+
+   # - name: Ejecutando playbook para configurar la replica de base de datos
+- import_playbook: ./playbooks/replicate_db.yml
+
+   # - name: Ejecutando playbook para configurar servidor de backups
+- import_playbook: ./playbooks/backup_server.yml
