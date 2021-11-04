@@ -1,3 +1,9 @@
 SHELL=/bin/bash
 
-0 */1 * * * backup sh /home/backup/script_backup.sh
+# Script para hacer los backups
+0 */1 * * * backup sh /home/backup/backups.sh
+
+# Script para hacer la limpieza de los backups
+@daily   backup sh /home/backup/backups_cleaner.sh --last-week
+@monthly backup sh /home/backup/backups_cleaner.sh --last-two-months
+@yearly  backup sh /home/backup/backups_cleaner.sh --last-year
