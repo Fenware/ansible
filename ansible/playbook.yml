@@ -2,7 +2,7 @@
 
 - name: Playbook para ejecutar y configurar todo
   gather_facts: no
-  hosts: database_servers
+  hosts: all
 
   #tasks:  
 
@@ -14,3 +14,9 @@
 
    # - name: Ejecutando playbook para configurar servidor de backups
 - import_playbook: ./playbooks/backup_server.yml
+
+   # - name: Ejecutando playbook para configurar el servidor de las apps
+- import_playbook: ./playbooks/main_server.yml
+
+   # - name: Ejecutando playbook para configurar el servidor de las apps
+- import_playbook: ./playbooks/project_deploy.yml
