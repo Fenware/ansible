@@ -41,7 +41,7 @@
       service: name=docker state=started
       
     - name: Docker Compose - start backend
-      shell: cd /var/backend/ && docker-compose build && docker-compose up -d
+      shell: cd /var/backend/ && docker-compose -f docker-compose.prod.yml build && docker-compose -f docker-compose.prod.yml up -d
       become: yes
       
     - name: Docker Compose - start frontend and ws-microservice
