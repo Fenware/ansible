@@ -1,6 +1,6 @@
 Passwords:
   Usuario root: mnoseadmin1234
-  Usuario administrador: administrador
+  Usuario admin: 12345678
 
 Ssh:
-  port: 43565
+  port: 435655
