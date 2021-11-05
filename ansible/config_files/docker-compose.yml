@@ -1,0 +1,20 @@
+version: '3.5'
+services:
+  vue-ui-admin:
+    image: lucaspintos909/admin-frontend:latest
+    ports:
+      - "8081:80"
+  vue-ui-docente:
+    image: lucaspintos909/docente-frontend:latest
+    ports:
+      - "8082:80"
+  vue-ui-alumno:
+    image: lucaspintos909/alumno-frontend:latest
+    ports:
+      - "8083:80"
+  ws-microservice:
+    image: lucaspintos909/ws-microservice:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - API_URL=http://172.16.213.130:8080
