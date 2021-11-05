@@ -2,7 +2,7 @@
 
 - name: Desplegar proyecto a produccion
   connection: ssh
-  hosts: all
+  hosts: main_server
   gather_facts: No
   vars:
     ansible_ssh_private_key_file: "/home/lucas/.ssh/server_proyecto.pem"
@@ -18,30 +18,33 @@
           - git
       become: yes
 
-    - git:
+    - name: Clonando repositorio del backend
+      git:
         repo: https://{{ githubtoken }}:x-oauth-basic@github.com/Fenware/backend.git
         dest: "/var/backend"
         update: yes
       become: yes
     
     - name: Creando carpeta frontend
-      shell: mkdir /var/frontend
+      file:
+        path: "/var/frontend"
+        state: directory
       become: yes
 
-    - name: Descargando docker-compose.yml para levantar los frontends
-      get_url:
-        url: https://fenware.github.io/archivos/docker-compose.yml
-        dest: /var/frontend/
+    - name: Copiando docker-compose.yml para levantar los frontends y el microservicio
+      copy:
+        src: "../config_files/docker-compose.yml"
+        dest: "/var/frontend"
       become: yes
-
-    - name: start docker service
+  
+    - name: Start docker service
       service: name=docker state=started
       
-    - name: Docker Compose - start backend & database
+    - name: Docker Compose - start backend
       shell: cd /var/backend/ && docker-compose build && docker-compose up -d
       become: yes
       
-    - name: Docker Compose - start frontend
+    - name: Docker Compose - start frontend and ws-microservice
       shell: cd /var/frontend/ && docker-compose up -d
       become: yes
 
